@@ -1,5 +1,7 @@
 package com.vijeesh.productapp;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +20,15 @@ public class ProductController {
     @Autowired
     RestTemplate restTemplate;
 
-
+/*
+    @HystrixCommand(fallbackMethod = "getDefaultInfo",
+            commandProperties = {
+                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000"),
+                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value="60")
+            })
+  */
     @GetMapping("/product")
+
     public ProductInfo getProductInfo (){
 
         HttpHeaders headers = new HttpHeaders();
@@ -30,6 +39,12 @@ public class ProductController {
         return new ProductInfo(111, "test prodtct", 2222, review );
 
     }
+
+    public ProductInfo getDefaultInfo(){
+        return new ProductInfo(111, "test prodtct", 2222, new Review("", 0, 0, 0)  );
+
+    }
+
 
     public RestTemplate getRestTemplate() {
         return restTemplate;
